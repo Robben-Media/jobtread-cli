@@ -1,0 +1,21 @@
+items:
+  - name: Raw request passthrough
+    method: "*"
+    path: "/*"
+    status: scaffolded
+    tags:
+      - core
+      - bootstrap
+    description: >
+      Generic request support is implemented so every documented JobTread API item
+      can be exercised immediately, even before resource-specific commands are generated.
+  - name: API inventory sync
+    method: GET
+    path: /docs
+    status: pending-doc-access
+    tags:
+      - discovery
+      - automation
+    description: >
+      Placeholder for importing the full API item inventory from JobTread's official
+      developer documentation or sandbox export once machine-readable docs are available.
