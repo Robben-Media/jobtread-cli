@@ -3,6 +3,7 @@ module github.com/Robben-Media/jobtread-cli
 go 1.25.0
 
 require (
+	github.com/jmespath/go-jmespath v0.4.0
 	github.com/spf13/cobra v1.10.1
 	gopkg.in/yaml.v3 v3.0.1
 )

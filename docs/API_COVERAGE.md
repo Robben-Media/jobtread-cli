@@ -1,20 +1,34 @@
 # API Coverage Strategy
 
-This repository is structured to cover the complete JobTread API once the authoritative endpoint inventory is available.
+This repository now treats JobTread's live Pave schema at `https://api.jobtread.com/pave` as the coverage authority.
 
-## Current state
+## Coverage pipeline
 
-- `jobtread request METHOD PATH` can call any JobTread endpoint directly.
-- `internal/catalog/api_items.yaml` seeds the coverage catalog that future generation can expand.
-- CI validates the CLI bootstrap on each push and pull request.
+1. Fetch the live JobTread Pave schema with `jobtread sync import`.
+2. Normalize the root operation inventory into `internal/catalog/api_manifest.json`.
+3. Generate the runtime CLI surface from that manifest on the next invocation.
+4. Enforce completeness with `jobtread sync validate`.
 
-## Why the inventory is not generated yet
+## Coverage rules
 
-JobTread's public documentation entrypoint is visible, but the machine-readable endpoint inventory was not exposed anonymously during bootstrap. Generating named commands without the authoritative docs would force endpoint guessing.
+- Every root Pave operation from `schema.root.type.object` must appear in the manifest.
+- Every manifest operation must have a generated CLI mapping.
+- Empty manifests fail validation.
+- Raw `jobtread pave query` remains the escape hatch, not the coverage system.
 
-## Recommended next action
+## Auth model
 
-1. Export or capture the full JobTread API item list from the authenticated developer docs or sandbox.
-2. Normalize the inventory into `internal/catalog/api_items.yaml`.
-3. Add a generator that creates resource-specific Cobra commands from that catalog.
-4. Add contract tests against a sandbox account for each API item.
+- Environment grant key first.
+- Explicit `JOBTREAD_EMAIL` and `JOBTREAD_PASSWORD` second.
+- Exact keychain service override third.
+- Targeted likely-name keychain lookups last.
+- No broad keychain enumeration.
+- If only login credentials are available, the CLI mints a grant through `captchaToken` + `createGrant`.
+
+## Output model
+
+- Body-only stdout.
+- Optional stderr metadata.
+- `auto` output selection between compact JSON and TOON.
+- JMESPath shaping before formatting.
+- Generated Pave commands use minimal default selections to reduce token use.

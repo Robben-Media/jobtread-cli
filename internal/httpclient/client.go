@@ -3,7 +3,6 @@ package httpclient
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -21,6 +20,15 @@ type Client struct {
 	httpClient *http.Client
 }
 
+type Response struct {
+	Body       []byte
+	StatusCode int
+	Headers    http.Header
+	Method     string
+	URL        string
+	Duration   time.Duration
+}
+
 type Request struct {
 	Method      string
 	Path        string
@@ -35,14 +43,14 @@ func New(cfg config.Config) *Client {
 		baseURL:    strings.TrimRight(cfg.BaseURL, "/"),
 		token:      cfg.Token,
 		authScheme: cfg.AuthScheme,
-		httpClient: &http.Client{Timeout: 60 * time.Second},
+		httpClient: &http.Client{Timeout: cfg.Timeout},
 	}
 }
 
-func (c *Client) Do(ctx context.Context, req Request) ([]byte, int, error) {
+func (c *Client) Do(ctx context.Context, req Request) (Response, error) {
 	u, err := url.Parse(c.baseURL + normalizePath(req.Path))
 	if err != nil {
-		return nil, 0, fmt.Errorf("build request url: %w", err)
+		return Response{}, fmt.Errorf("build request url: %w", err)
 	}
 
 	values := u.Query()
@@ -53,7 +61,7 @@ func (c *Client) Do(ctx context.Context, req Request) ([]byte, int, error) {
 
 	httpReq, err := http.NewRequestWithContext(ctx, req.Method, u.String(), bytes.NewReader(req.Body))
 	if err != nil {
-		return nil, 0, fmt.Errorf("build request: %w", err)
+		return Response{}, fmt.Errorf("build request: %w", err)
 	}
 
 	if req.ContentType != "" {
@@ -69,26 +77,34 @@ func (c *Client) Do(ctx context.Context, req Request) ([]byte, int, error) {
 		httpReq.Header.Set(key, value)
 	}
 
+	start := time.Now()
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
-		return nil, 0, fmt.Errorf("execute request: %w", err)
+		return Response{}, fmt.Errorf("execute request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, resp.StatusCode, fmt.Errorf("read response body: %w", err)
+		return Response{}, fmt.Errorf("read response body: %w", err)
 	}
 
 	if resp.StatusCode >= http.StatusBadRequest {
 		if len(body) == 0 {
-			return nil, resp.StatusCode, fmt.Errorf("request failed with status %s", resp.Status)
+			return Response{}, fmt.Errorf("request failed with status %s", resp.Status)
 		}
 
-		return nil, resp.StatusCode, fmt.Errorf("request failed with status %s: %s", resp.Status, strings.TrimSpace(string(body)))
+		return Response{}, fmt.Errorf("request failed with status %s: %s", resp.Status, strings.TrimSpace(string(body)))
 	}
 
-	return prettyJSON(body), resp.StatusCode, nil
+	return Response{
+		Body:       body,
+		StatusCode: resp.StatusCode,
+		Headers:    resp.Header.Clone(),
+		Method:     req.Method,
+		URL:        u.String(),
+		Duration:   time.Since(start),
+	}, nil
 }
 
 func normalizePath(path string) string {
@@ -97,18 +113,4 @@ func normalizePath(path string) string {
 	}
 
 	return "/" + path
-}
-
-func prettyJSON(body []byte) []byte {
-	var decoded any
-	if err := json.Unmarshal(body, &decoded); err != nil {
-		return body
-	}
-
-	pretty, err := json.MarshalIndent(decoded, "", "  ")
-	if err != nil {
-		return body
-	}
-
-	return pretty
 }

@@ -2,6 +2,7 @@ package config
 
 import (
 	"testing"
+	"time"
 )
 
 func TestLoadDefaults(t *testing.T) {
@@ -17,6 +18,10 @@ func TestLoadDefaults(t *testing.T) {
 
 	if cfg.AuthScheme != "Bearer" {
 		t.Fatalf("expected default auth scheme, got %q", cfg.AuthScheme)
+	}
+
+	if cfg.Timeout != 60*time.Second {
+		t.Fatalf("expected default timeout, got %s", cfg.Timeout)
 	}
 }
 
