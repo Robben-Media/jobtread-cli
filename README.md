@@ -2,6 +2,20 @@
 
 Go-based JobTread CLI with a live JobTread Pave schema importer, runtime-generated resource commands, safe keychain-backed grant resolution, and token-optimized output defaults.
 
+## Installation
+
+### Download Binary
+
+Download the latest release from [GitHub Releases](https://github.com/Robben-Media/jobtread-cli/releases).
+
+### Build from Source
+
+```bash
+git clone https://github.com/Robben-Media/jobtread-cli.git
+cd jobtread-cli
+go build ./cmd/jobtread
+```
+
 ## Current capabilities
 
 - `jobtread pave query` for raw JobTread Pave queries.
