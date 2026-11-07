@@ -12,17 +12,17 @@ type paveSchemaEnvelope struct {
 }
 
 var scalarTypeNames = map[string]struct{}{
-	"base64url":  {},
-	"boolean":    {},
+	"base64url":   {},
+	"boolean":     {},
 	"countryCode": {},
-	"date":       {},
-	"datetime":   {},
-	"int":        {},
-	"jobtreadId": {},
-	"number":     {},
-	"string":     {},
-	"time":       {},
-	"timeZone":   {},
+	"date":        {},
+	"datetime":    {},
+	"int":         {},
+	"jobtreadId":  {},
+	"number":      {},
+	"string":      {},
+	"time":        {},
+	"timeZone":    {},
 }
 
 func ImportPaveSchema(raw []byte, sourceURI string) (Manifest, error) {
