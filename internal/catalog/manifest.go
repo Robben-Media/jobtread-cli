@@ -31,25 +31,25 @@ type SourceMeta struct {
 }
 
 type Operation struct {
-	Transport          string       `json:"transport,omitempty"`
-	Group              string       `json:"group"`
-	Command            string       `json:"command"`
-	Method             string       `json:"method,omitempty"`
-	PathTemplate       string       `json:"path_template,omitempty"`
-	OperationID        string       `json:"operation_id"`
-	Summary            string       `json:"summary"`
-	Tags               []string     `json:"tags,omitempty"`
-	PathParams         []Parameter  `json:"path_params,omitempty"`
-	QueryParams        []Parameter  `json:"query_params,omitempty"`
-	HasRequestBody     bool         `json:"has_request_body"`
-	PaginationMode     string       `json:"pagination_mode,omitempty"`
-	FilterableFields   []string     `json:"filterable_fields,omitempty"`
-	ExpandableFields   []string     `json:"expandable_fields,omitempty"`
-	RawFallbackAllowed bool         `json:"raw_fallback_allowed"`
-	PaveField          string       `json:"pave_field,omitempty"`
-	Public             bool         `json:"public,omitempty"`
-	SupportsPagination bool         `json:"supports_pagination,omitempty"`
-	InputFields        []InputField `json:"input_fields,omitempty"`
+	Transport          string         `json:"transport,omitempty"`
+	Group              string         `json:"group"`
+	Command            string         `json:"command"`
+	Method             string         `json:"method,omitempty"`
+	PathTemplate       string         `json:"path_template,omitempty"`
+	OperationID        string         `json:"operation_id"`
+	Summary            string         `json:"summary"`
+	Tags               []string       `json:"tags,omitempty"`
+	PathParams         []Parameter    `json:"path_params,omitempty"`
+	QueryParams        []Parameter    `json:"query_params,omitempty"`
+	HasRequestBody     bool           `json:"has_request_body"`
+	PaginationMode     string         `json:"pagination_mode,omitempty"`
+	FilterableFields   []string       `json:"filterable_fields,omitempty"`
+	ExpandableFields   []string       `json:"expandable_fields,omitempty"`
+	RawFallbackAllowed bool           `json:"raw_fallback_allowed"`
+	PaveField          string         `json:"pave_field,omitempty"`
+	Public             bool           `json:"public,omitempty"`
+	SupportsPagination bool           `json:"supports_pagination,omitempty"`
+	InputFields        []InputField   `json:"input_fields,omitempty"`
 	DefaultSelection   map[string]any `json:"default_selection,omitempty"`
 }
 
